@@ -1,0 +1,23 @@
+Tables:
+- customer:
+    - id SERIAL PRIMARY KEY,
+    - fullname TEXT,
+    - address TEXT,
+    - phone TEXT,
+    - email TEXT
+
+- invoice:
+    - id SERIAL PRIMARY KEY,
+    - customerid references customer(id),
+    - date DATE
+
+- item: 
+    - id SERIAL PRIMARY KEY,
+    - item TEXT,
+    - price FLOAT
+
+-invoiceitem:
+    - id SERIAL PRIMARY KEY,
+    - invoiceid references invoice(id),
+    - itemid references item(id),
+    - quantity INT

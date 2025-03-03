@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Query Interface</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+    .chat-box {
+      width: 100%;
+      max-width: 600px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+      max-height: 400px;
+      margin-bottom: 20px;
+    }
+    .chat-box .message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .user-message {
+      background-color: #e0f7fa;
+      align-self: flex-start;
+    }
+    .system-message {
+      background-color: #d9edf7; 
+      align-self: flex-end;
+    }
+    .input-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+    }
+    .input-container input {
+      width: 70%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .input-container button {
+      padding: 10px 20px;
+      border-radius: 5px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+    .input-container button:disabled {
+      background-color: #ccc;
+    }
+    .spinner {
+      display: none;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #00796b;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Invoice Query Interface</h1>
+
+  <div class="chat-box" id="chatBox">
+
+  </div>
+
+  <div class="spinner" id="spinner"></div>
+
+  <div class="input-container">
+    <input type="text" id="queryInput" placeholder="Enter your query">
+    <button id="submitQueryButton">Submit Query</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const queryInput = document.getElementById("queryInput");
+      const submitQueryButton = document.getElementById("submitQueryButton");
+      const chatBox = document.getElementById("chatBox");
+      const spinner = document.getElementById("spinner");
+
+      submitQueryButton.onclick = async () => {
+        const userQuery = queryInput.value.trim();
+        if (!userQuery) return;
+
+        spinner.style.display = 'block';
+
+        appendMessage("User", userQuery);
+        queryInput.value = '';
+
+        try {
+          const response = await fetch("/userquery", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ 'userquery': userQuery })
+          });
+          const data = await response.text();
+          appendMessage("System", data);
+        } catch (error) {
+          appendMessage("System", "Error processing the query: " + error);
+        } finally {
+          spinner.style.display = 'none';
+        }
+      };
+
+      function appendMessage(role, message) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', role === 'User' ? 'user-message' : 'system-message');
+        messageElement.textContent = message;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight;  
+      }
+    });
+  </script>
+
+</body>
+</html>
