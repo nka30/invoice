@@ -1,6 +1,6 @@
 # Invoice Web Application
 
-Web application using Flask and PostgreSQL to store customer, item and invoice information. 
+Web application using Flask and PostgreSQL to store and retrieve customer, item and invoice information using Open.ai gpt-4o model 
 
 ### Prerequisites
 
